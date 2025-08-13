@@ -43,8 +43,24 @@ func PrintFrequencies(freqTable FrequencyTable) {
 	// Example output: "Character 'a' (97): 1234 occurrences"
 	// Handle special characters (spaces, newlines) nicely
 	for key, value := range freqTable {
-		if unicode.IsLetter(rune(key)) || unicode.IsDigit(rune(key)) {
-			fmt.Printf("Character '%v' (%v): %v occurrences\n", string(key), key, value)
+
+		switch key {
+		case ' ':
+			fmt.Printf("Space: %v occurrences\n", value)
+		case '\n':
+			fmt.Printf("Newline: %v occurrences\n", value)
+		case '\t':
+			fmt.Printf("Tab: %v occurrences\n", value)
+		default:
+			// Only print alphanumeric characters
+			if unicode.IsLetter(rune(key)) || unicode.IsDigit(rune(key)) {
+				fmt.Printf("Character '%v' (%v): %v occurrences\n", string(key), key, value)
+			} else if unicode.IsPrint(rune(key)) {
+				fmt.Printf("Character '%c' (%d): %d occurrences\n", key, key, value)
+			} else {
+				fmt.Printf("Non-printable character (0x%02x): %d occurrences\n", key, value)
+			}
 		}
+
 	}
 }
