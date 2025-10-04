@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"huffman-compressor/internal"
 	"os"
 )
 
@@ -40,14 +41,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	// table, err := internal.AnalyzeFrequencies(*inputFile)
+	table, err := internal.AnalyzeFrequencies(*inputFile)
 
-	// if err != nil {
-	// 	fmt.Printf("Error analyzing frequencies: %v\n", err)
-	// 	os.Exit(1)
-	// }
+	if err != nil {
+		fmt.Printf("Error analyzing frequencies: %v\n", err)
+		os.Exit(1)
+	}
 
-	// internal.PrintFrequencies(table)
+	internal.PrintFrequencies(table)
 
 	if *compress {
 		fmt.Printf("Compressing %s to %s\n", *inputFile, *outputFile)
