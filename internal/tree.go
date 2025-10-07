@@ -34,6 +34,10 @@ func (hf *HuffmanNode) GetRight() *HuffmanNode {
 	return hf.right
 }
 
+func (hf *HuffmanNode) IsDummy() bool {
+	return hf != nil && hf.isLeaf && hf.char == 0 && hf.frequency == 0
+}
+
 func NewLeafNode(char byte, frequency int) *HuffmanNode {
 	return &HuffmanNode{
 		char:      char,
