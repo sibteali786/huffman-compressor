@@ -51,10 +51,27 @@ func main() {
 	internal.PrintFrequencies(table)
 
 	if *compress {
-		fmt.Printf("Compressing %s to %s\n", *inputFile, *outputFile)
-		// TODO: Call compression function
+		fmt.Printf("Compressing %s to %s...\n", *inputFile, *outputFile)
+
+		// Perform compression
+		err := internal.CompressFile(*inputFile, *outputFile)
+		if err != nil {
+
+			fmt.Fprintf(os.Stderr, "Compression failed: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Show statistics
+		stats, err := internal.GetCompressionStats(*inputFile, *outputFile)
+		if err == nil {
+
+			internal.PrintCompressionStats(stats)
+		}
+
+		fmt.Printf("✓ Successfully compressed to %s\n", *outputFile)
 	} else if *decompress {
 		fmt.Printf("Decompressing %s to %s\n", *inputFile, *outputFile)
-		// TODO: Call decompression function
+		// TODO: Will implement in Step 6-7
+		fmt.Println("Decompression not yet implemented")
 	}
 }
