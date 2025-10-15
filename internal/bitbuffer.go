@@ -39,9 +39,10 @@ func (bb *BitBuffer) WriteBit(bit uint64) {
 }
 
 func (bb *BitBuffer) WriteBits(bits uint64, length int) {
-	// Extract bits from MSB to LSB
-	for i := length - 1; i >= 0; i-- {
-		bit := (bits >> i) & 1 // Extract from position (length-1) down to 0
+	// Write bits from LSB (position 0) to MSB (position length-1)
+	// This matches how appendBit() stores them
+	for i := 0; i < length; i++ {
+		bit := (bits >> i) & 1
 		bb.WriteBit(bit)
 	}
 }

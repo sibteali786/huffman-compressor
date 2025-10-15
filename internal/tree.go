@@ -1,6 +1,9 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 type HuffmanNode struct {
 	char      byte // the character (only for leaf nodes)
@@ -62,9 +65,8 @@ func BuildHuffmanTree(freqTable FrequencyTable) (*HuffmanNode, error) {
 		return nil, fmt.Errorf("frequency table has no entries to process")
 	}
 
-	// Edge case: only one character
+	// ✅ Edge case: only one character - COMPLETE IMPLEMENTATION
 	if len(freqTable) == 1 {
-		// handle one character case
 		var singleChar byte
 		var singleFreq int
 		for char, freq := range freqTable {
@@ -73,12 +75,13 @@ func BuildHuffmanTree(freqTable FrequencyTable) (*HuffmanNode, error) {
 			break
 		}
 
-		// create a leaf node for the character
+		// Create a leaf node for the character
 		leafNode := NewLeafNode(singleChar, singleFreq)
 
-		// Create a dummy internal node (optional char, freq = 0)
+		// Create a dummy internal node
 		dummyNode := NewLeafNode(0, 0)
-		// create a root with real leaf on left and dummy on right
+
+		// Create a root with real leaf on left and dummy on right
 		root := NewInternalNode(leafNode, dummyNode)
 		return root, nil
 	}
@@ -87,33 +90,41 @@ func BuildHuffmanTree(freqTable FrequencyTable) (*HuffmanNode, error) {
 	capacity := len(freqTable)
 
 	// Create priority queue
-	// Priority = frequency ( lower frequency = higher priority )
 	pq := NewPriorityQueue[*HuffmanNode](capacity * 2)
 
-	// Step 1: Create leaf nodes and enqueue
-	for char, freq := range freqTable {
+	// ✅ Sort characters to ensure deterministic tree building
+	chars := make([]byte, 0, len(freqTable))
+	for char := range freqTable {
+		chars = append(chars, char)
+	}
+
+	// Sort characters (ensures same order every time)
+	sort.Slice(chars, func(i, j int) bool {
+		return chars[i] < chars[j]
+	})
+
+	// Step 1: Create leaf nodes and enqueue (in sorted order)
+	for _, char := range chars {
+		freq := freqTable[char]
 		leafNode := NewLeafNode(char, freq)
 		pq.Enqueue(leafNode, freq)
 	}
 
-	// Step 2: Build tree up from bottom up
+	// Step 2: Build tree bottom up
 	for pq.Size() > 1 {
-		// Get two min nodes i.e dequeue PQ
 		left, errLeft := pq.Dequeue()
 		right, errRight := pq.Dequeue()
 		if errLeft != nil || errRight != nil {
-			fmt.Printf("There is some error while getting nodes for given PQ: %v, %v", errLeft, errRight)
-			break
+			return nil, fmt.Errorf("error getting nodes from PQ: %v, %v", errLeft, errRight)
 		}
 		parentNode := NewInternalNode(left, right)
-		// Enqueue the parent node
 		pq.Enqueue(parentNode, parentNode.frequency)
 	}
 
 	// Step 3: root is last remaining node
 	root, err := pq.Dequeue()
 	if err != nil {
-		fmt.Printf("There is some issue with PQ for root node: %v", err)
+		return nil, fmt.Errorf("error getting root node: %v", err)
 	}
 	return root, nil
 }

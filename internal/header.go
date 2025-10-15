@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"sort"
 )
 
 const MagicNumber = "HF"
@@ -31,7 +32,6 @@ func WriteHeader(writer io.Writer, freqTable FrequencyTable, originalSize uint64
 	// 3. Write number of unique characters
 	numChars := uint8(len(freqTable))
 	_, err = writer.Write([]byte{numChars})
-
 	if err != nil {
 		return err
 	}
@@ -42,8 +42,19 @@ func WriteHeader(writer io.Writer, freqTable FrequencyTable, originalSize uint64
 		return err
 	}
 
-	// 5. Write frequency entries
-	for char, freq := range freqTable {
+	// ✅ 5. Write frequency entries IN SORTED ORDER
+	// Sort characters to ensure deterministic order
+	chars := make([]byte, 0, len(freqTable))
+	for char := range freqTable {
+		chars = append(chars, char)
+	}
+	sort.Slice(chars, func(i, j int) bool {
+		return chars[i] < chars[j]
+	})
+
+	// Write in sorted order
+	for _, char := range chars {
+		freq := freqTable[char]
 		_, err = writer.Write([]byte{char})
 		if err != nil {
 			return err
@@ -55,7 +66,6 @@ func WriteHeader(writer io.Writer, freqTable FrequencyTable, originalSize uint64
 		}
 	}
 	return nil
-
 }
 
 // ReadHeader reads and parses the header from reader
