@@ -347,9 +347,9 @@ MIT License - feel free to use this code for learning and projects.
 
 ## 📧 Contact
 
-Created by [Your Name] - [your.email@example.com]
+Created by Syed Sibteali Baqar - sibteali786@gmail.com
 
-Project Link: [https://github.com/yourusername/huffman-compressor](https://github.com/yourusername/huffman-compressor)
+Project Link: [https://github.com/sibteali786/huffman-compressor](https://github.com/sibteali786/huffman-compressor)
 
 ---
 
